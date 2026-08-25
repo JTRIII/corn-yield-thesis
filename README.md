@@ -117,25 +117,13 @@ A county contains many soil map units, components, and soil layers.
 For soil properties in the upper 30 cm, each record is weighted by:
 
 $$
-\text{soil weight}
-=
-\text{county map-unit acres}
-\times
-\frac{\text{component percent}}{100}
-\times
-\text{layer thickness}
+\text{soil weight} = \text{county map-unit acres} \times \frac{\text{component percent}}{100} \times \text{layer thickness}
 $$
 
 The county value is then calculated as:
 
 $$
-\text{county average}
-=
-\frac{
-\sum(\text{soil value} \times \text{soil weight})
-}{
-\sum(\text{soil weight})
-}
+\text{county average} = \frac{\sum(\text{soil value} \times \text{soil weight})}{\sum(\text{soil weight})}
 $$
 
 This gives more influence to soil records that represent a larger portion of
