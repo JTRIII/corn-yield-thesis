@@ -248,3 +248,14 @@ This prevents a small soil component or thin soil horizon from having the same i
 
 Since I have collected data and built a dataset, the next step will be to create a final analysis notebook that explores the data, creates visualizations, engineers machine-learning features, and compares
 prediction models.
+
+A Thesis direction could be called "County-Level Corn Yield Prediction Using Machine Learning, Weather, and Soil Data". 
+
+Some potential questions:
+
+1. How accurately can machine-learning models predict county-level corn yield?
+2. How much do soil variables improve predictions compared with weather alone?
+3. How early in the growing season can a reliable prediction be made?
+4. Which weather and soil variables have the greatest influence on predictions?
+
+I could use machine learning techniques like Linear Regression, Support Vector Regression, and Random Forest to do some predictions with. 
