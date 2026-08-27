@@ -71,9 +71,9 @@ acre.
 
 ### Corn Belt Weather Data
 
-Weather comes from [Daymet](https://daymet.ornl.gov/).
+Weather comes from [Daymet](https://daymet.ornl.gov/) through the [Single Pixel Extraction Tool](https://daymet.ornl.gov/single-pixel-tool-guide).
 
-A representative latitude and longitude are used for each county. Daymet
+A representative [latitude and longitude](https://simplemaps.com/data/us-counties) are used for each county. Daymet
 returns daily weather from the nearest 1 km grid cell.
 
 Daily weather is converted into monthly features for:
