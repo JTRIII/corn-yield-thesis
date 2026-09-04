@@ -1,7 +1,4 @@
 .ipynb_checkpoints
 .env
 .DS_Store
-soil_counties
-daymet_counties
-County Corn yield Data
-corn_belt_analysis.ipynb
+data/raw

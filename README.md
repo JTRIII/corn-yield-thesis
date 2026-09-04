@@ -29,7 +29,7 @@ Science at Indiana State University.
 ## How to set up environment
 
 I am using Anaconda with Jupyter Lab to run my python code. I have a general guide I use to setup an Anaconda evironment everytime I setup a new project:
-- [Anaconda Environment Setup for a Jupyter Lab/Notebook Project](./anaconda_env_setup.md). 
+- [Anaconda Environment Setup for a Jupyter Lab/Notebook Project](./docs/environment_setup.md). 
 
 I have also added the code below to copy and paste to setup the same environment I am using:
 
@@ -146,7 +146,7 @@ Run the notebooks in this order:
 
 The final dataset is:
 
-[`corn_belt_yield_weather_soil.csv`](./County%20Corn%20Yield%20Data/corn_belt_yield_weather_soil.csv)
+[`corn_belt_yield_weather_soil.csv`](./data/processed/corn_belt_yield_weather_soil.csv)
 
 
 ### Dataset Summary
