@@ -1,14 +1,20 @@
-# County Level Corn Yield, Weather, and Soil Dataset
+# County-Level Corn Yield, Weather, and Soil Dataset
+
+
+**Author:** James T. Roberts III  
+**Institution:** Indiana State University  
+**Status:** Master's thesis research in progress
 
 
 ## Table of Contents
 
 1. [Overview of Thesis](#overview-of-thesis)
-2. [How to set up environment](#how-to-set-up-environment)
+2. [How to Set Up the Environment](#how-to-set-up-environment)
 3. [Data Collection](#data-collection)
-4. [Notebooks](#notebooks)
-5. [Final Dataset](#final-dataset)
-6. [What's Next?](#whats-next)
+4. [Data Sources and Citations](#data-sources-and-citations)
+5. [Notebooks](#notebooks)
+6. [Final Dataset](#final-dataset)
+7. [What's Next?](#whats-next)
 
 
 ## Overview of Thesis
@@ -28,7 +34,7 @@ Science at Indiana State University.
 
 ## How to set up environment
 
-I am using Anaconda with Jupyter Lab to run my python code. I have a general guide I use to setup an Anaconda evironment everytime I setup a new project:
+I use Anaconda and JupyterLab to run the Python code in this project. The following guide explains how to set up the project environment:
 - [Anaconda Environment Setup for a Jupyter Lab/Notebook Project](./docs/environment_setup.md). 
 
 I have also added the code below to copy and paste to setup the same environment I am using:
@@ -130,16 +136,77 @@ This gives more influence to soil records that represent a larger portion of
 the county.
 
 
+## Data Sources and Citations
+
+The final dataset is a derived research dataset created by collecting, cleaning, aggregating, and merging information from the sources below. Each original data provider should be cited separately when this dataset is used.
+
+### USDA NASS Corn-Yield Data
+
+Annual county-level corn grain yield data were obtained from the United States Department of Agriculture National Agricultural Statistics Service (USDA NASS) Quick Stats database through the Quick Stats API. The query selected county-level corn grain yield measured in bushels per acre for 2000–2025.
+
+**Citation:**
+
+> United States Department of Agriculture, National Agricultural Statistics Service. (n.d.). *Quick Stats database: County-level corn grain yield, 2000–2025* [Data set]. Accessed September 4, 2026. https://quickstats.nass.usda.gov/
+
+USDA NASS requests acknowledgment when its public-domain information is reproduced or used in another work.
+
+### Daymet Weather Data
+
+Daily weather data were obtained from Daymet Version 4 R1 using the Daymet Single Pixel Extraction Tool. Daily observations were collected for 2000–2025 and converted into monthly precipitation, solar radiation, day length, snow-water equivalent, maximum temperature, minimum temperature, and vapor-pressure features.
+
+**Daymet dataset citation:**
+
+> Thornton, M. M., Shrestha, R., Wei, Y., Thornton, P. E., and Kao, S.-C. (2022). *Daymet: Daily Surface Weather Data on a 1-km Grid for North America, Version 4 R1* (Version 4.1) [Data set]. ORNL Distributed Active Archive Center. https://doi.org/10.3334/ORNLDAAC/2129
+
+**Single Pixel Extraction Tool citation:**
+
+> Thornton, M. M., and Devarakonda, R. (2011). *Daymet Single Pixel Extraction Tool*. ORNL Distributed Active Archive Center, Oak Ridge, Tennessee, USA. https://doi.org/10.3334/ORNLDAAC/2361
+
+Daymet also recommends citing the following publications for its methodology. The radiation and humidity references are particularly relevant because this dataset includes shortwave solar radiation and vapor pressure.
+
+> Thornton, P. E., Shrestha, R., Thornton, M., Kao, S.-C., Wei, Y., and Wilson, B. E. (2021). Gridded daily weather data for North America with comprehensive uncertainty quantification. *Scientific Data, 8*, 190. https://doi.org/10.1038/s41597-021-00973-0
+
+> Thornton, P. E., Running, S. W., and White, M. A. (1997). Generating surfaces of daily meteorological variables over large regions of complex terrain. *Journal of Hydrology, 190*, 214–251. https://doi.org/10.1016/S0022-1694(96)03128-9
+
+> Thornton, P. E., Hasenauer, H., and White, M. A. (2000). Simultaneous estimation of daily solar radiation and humidity from observed temperature and precipitation: An application over complex terrain in Austria. *Agricultural and Forest Meteorology, 104*, 255–271. https://doi.org/10.1016/S0168-1923(00)00170-2
+
+> Thornton, P. E., and Running, S. W. (1999). An improved algorithm for estimating incident daily solar radiation from measurements of temperature, humidity, and precipitation. *Agricultural and Forest Meteorology, 93*, 211–228. https://doi.org/10.1016/S0168-1923(98)00126-9
+
+### USDA NRCS SSURGO Soil Data
+
+Soil information was obtained from the Soil Survey Geographic Database (SSURGO), maintained by the USDA Natural Resources Conservation Service. Tabular records were retrieved through the Soil Data Access REST service and aggregated into county-level soil features.
+
+**Citation:**
+
+> Soil Survey Staff, Natural Resources Conservation Service, United States Department of Agriculture. (n.d.). *Soil Survey Geographic (SSURGO) Database* [Data set]. Soil Data Access. Accessed September 4, 2026. https://sdmdataaccess.nrcs.usda.gov/
+
+The soil records were processed into county-level weighted averages based on map-unit area, component percentage, and soil-horizon thickness. These calculations and resulting county-level values are derived products and are not original SSURGO measurements.
+
+### County Coordinate Data
+
+Representative county latitude and longitude coordinates were obtained from the Basic version of the SimpleMaps United States Counties Database. Only county identifiers and coordinate fields were used. The records were subset to the 13 Corn Belt states and merged with the yield data using county FIPS codes.
+
+**Citation:**
+
+> SimpleMaps. (2026). *United States Counties Database, Basic version* [Data set]. https://simplemaps.com/data/us-counties
+
+The SimpleMaps Basic database is identified by its provider as licensed under the [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/). The required attribution and link to the original database are provided above.
+
+### Derived Dataset Notice
+
+The file `data/processed/corn_belt_yield_weather_soil.csv` is a derived dataset produced for this research project. It combines and transforms data from USDA NASS, Daymet, USDA NRCS SSURGO, and SimpleMaps. The inclusion of these sources does not imply that the original data providers endorse this project or its conclusions.
+
+
 ## Notebooks
 
 Run the notebooks in this order:
 
 | Order | Notebook | Purpose |
 |---:|---|---|
-| 1 | `notebooks/01_county_level_corn_yield.ipynb` | Downloads and cleans corn-yield data |
-| 2 | `notebooks/02_county_level_weather_daymet.ipynb` | Downloads and summarizes weather data |
-| 3 | `notebooks/03_county_level_soil.ipynb` | Downloads and summarizes soil data |
-| 4 | `notebooks/04_corn_belt_analysis.ipynb` | Planned data analysis and machine learning |
+| 1 | [`01_county_level_corn_yield.ipynb`](./notebooks/01_county_level_corn_yield.ipynb) | Downloads and cleans corn-yield data |
+| 2 | [`02_county_level_weather_daymet.ipynb`](./notebooks/02_county_level_weather_daymet.ipynb) | Downloads and summarizes weather data |
+| 3 | [`03_county_level_soil.ipynb`](./notebooks/03_county_level_soil.ipynb) | Downloads and summarizes soil data |
+| 4 | `04_corn_belt_analysis.ipynb` | Planned data analysis and machine learning |
 
 
 ## Final Dataset
@@ -261,62 +328,3 @@ Some potential questions:
 I could use machine learning techniques like Linear Regression, Support Vector Regression, and Random Forest to do some predictions with. 
 
 
-## Data Sources and Citations
-
-The final dataset is a derived research dataset created by collecting, cleaning, aggregating, and merging information from the sources below. Each original data provider should be cited separately when this dataset is used.
-
-### USDA NASS Corn-Yield Data
-
-Annual county-level corn grain yield data were obtained from the United States Department of Agriculture National Agricultural Statistics Service (USDA NASS) Quick Stats database through the Quick Stats API. The query selected county-level corn grain yield measured in bushels per acre for 2000–2025.
-
-**Citation:**
-
-> United States Department of Agriculture, National Agricultural Statistics Service. (n.d.). *Quick Stats database: County-level corn grain yield, 2000–2025* [Data set]. Accessed September 4, 2026. https://quickstats.nass.usda.gov/
-
-USDA NASS requests acknowledgment when its public-domain information is reproduced or used in another work.
-
-### Daymet Weather Data
-
-Daily weather data were obtained from Daymet Version 4 R1 using the Daymet Single Pixel Extraction Tool. Daily observations were collected for 2000–2025 and converted into monthly precipitation, solar radiation, day length, snow-water equivalent, maximum temperature, minimum temperature, and vapor-pressure features.
-
-**Daymet dataset citation:**
-
-> Thornton, M. M., Shrestha, R., Wei, Y., Thornton, P. E., and Kao, S.-C. (2022). *Daymet: Daily Surface Weather Data on a 1-km Grid for North America, Version 4 R1* (Version 4.1) [Data set]. ORNL Distributed Active Archive Center. https://doi.org/10.3334/ORNLDAAC/2129
-
-**Single Pixel Extraction Tool citation:**
-
-> Thornton, M. M., and Devarakonda, R. (2011). *Daymet Single Pixel Extraction Tool*. ORNL Distributed Active Archive Center, Oak Ridge, Tennessee, USA. https://doi.org/10.3334/ORNLDAAC/2361
-
-Daymet also recommends citing the following publications for its methodology. The radiation and humidity references are particularly relevant because this dataset includes shortwave solar radiation and vapor pressure.
-
-> Thornton, P. E., Shrestha, R., Thornton, M., Kao, S.-C., Wei, Y., and Wilson, B. E. (2021). Gridded daily weather data for North America with comprehensive uncertainty quantification. *Scientific Data, 8*, 190. https://doi.org/10.1038/s41597-021-00973-0
-
-> Thornton, P. E., Running, S. W., and White, M. A. (1997). Generating surfaces of daily meteorological variables over large regions of complex terrain. *Journal of Hydrology, 190*, 214–251. https://doi.org/10.1016/S0022-1694(96)03128-9
-
-> Thornton, P. E., Hasenauer, H., and White, M. A. (2000). Simultaneous estimation of daily solar radiation and humidity from observed temperature and precipitation: An application over complex terrain in Austria. *Agricultural and Forest Meteorology, 104*, 255–271. https://doi.org/10.1016/S0168-1923(00)00170-2
-
-> Thornton, P. E., and Running, S. W. (1999). An improved algorithm for estimating incident daily solar radiation from measurements of temperature, humidity, and precipitation. *Agricultural and Forest Meteorology, 93*, 211–228. https://doi.org/10.1016/S0168-1923(98)00126-9
-
-### USDA NRCS SSURGO Soil Data
-
-Soil information was obtained from the Soil Survey Geographic Database (SSURGO), maintained by the USDA Natural Resources Conservation Service. Tabular records were retrieved through the Soil Data Access REST service and aggregated into county-level soil features.
-
-**Citation:**
-
-> Soil Survey Staff, Natural Resources Conservation Service, United States Department of Agriculture. (n.d.). *Soil Survey Geographic (SSURGO) Database* [Data set]. Soil Data Access. Accessed September 4, 2026. https://sdmdataaccess.nrcs.usda.gov/
-
-The soil records were processed into county-level weighted averages based on map-unit area, component percentage, and soil-horizon thickness. These calculations and resulting county-level values are derived products and are not original SSURGO measurements.
-
-### County Coordinate Data
-
-Representative county latitude and longitude coordinates were obtained from the Basic version of the SimpleMaps United States Counties Database. Only county identifiers and coordinate fields were used. The records were subset to the 13 Corn Belt states and merged with the yield data using county FIPS codes.
-
-**Citation:**
-
-> SimpleMaps. (2026). *United States Counties Database, Basic version* [Data set]. https://simplemaps.com/data/us-counties
-
-The SimpleMaps Basic database is identified by its provider as licensed under the [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/). The required attribution and link to the original database are provided above.
-
-### Derived Dataset Notice
-
-The file `data/processed/corn_belt_yield_weather_soil.csv` is a derived dataset produced for this research project. It combines and transforms data from USDA NASS, Daymet, USDA NRCS SSURGO, and SimpleMaps. The inclusion of these sources does not imply that the original data providers endorse this project or its conclusions.
