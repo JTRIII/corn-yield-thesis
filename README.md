@@ -206,7 +206,8 @@ Run the notebooks in this order:
 | 1 | [`01_county_level_corn_yield.ipynb`](./notebooks/01_county_level_corn_yield.ipynb) | Downloads and cleans corn-yield data |
 | 2 | [`02_county_level_weather_daymet.ipynb`](./notebooks/02_county_level_weather_daymet.ipynb) | Downloads and summarizes weather data |
 | 3 | [`03_county_level_soil.ipynb`](./notebooks/03_county_level_soil.ipynb) | Downloads and summarizes soil data |
-| 4 | `04_corn_belt_analysis.ipynb` | Planned data analysis and machine learning |
+| 4 | [`04_exploratory_data_analysis.ipynb`](./notebooks/04_exploratory_data_analysis.ipynb) | Exploratory data analysis of the final combined dataset |
+| 5 | [`05_correlations_and_feature_importance.ipynb`](./notebooks/05_correlations_and_feature_importance.ipynb) | Finding correlations and important features in the dataset |
 
 
 ## Final Dataset
