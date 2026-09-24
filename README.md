@@ -208,6 +208,7 @@ Run the notebooks in this order:
 | 3 | [`03_county_level_soil.ipynb`](./notebooks/03_county_level_soil.ipynb) | Downloads and summarizes soil data |
 | 4 | [`04_exploratory_data_analysis.ipynb`](./notebooks/04_exploratory_data_analysis.ipynb) | Exploratory data analysis of the final combined dataset |
 | 5 | [`05_correlations_and_feature_importance.ipynb`](./notebooks/05_correlations_and_feature_importance.ipynb) | Finding correlations and important features in the dataset |
+| 6 | [`06_model_evaluation_and_final_results.ipynb`](./notebooks/06_model_evaluation_and_final_results.ipynb) | Evaluating models based on the features selected by the correlations and feature importance methods |
 
 
 ## Final Dataset
