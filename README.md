@@ -1,70 +1,92 @@
-# County-Level Corn Yield, Weather, and Soil Dataset
-
+# County-Level Corn Yield Modeling With Weather and Soil Data
 
 **Author:** James T. Roberts III  
 **Institution:** Indiana State University  
-**Status:** Master's thesis research in progress
-
+**Status:** Notebooks 01–06 complete; thesis manuscript in preparation
 
 ## Table of Contents
 
 1. [Overview of Thesis](#overview-of-thesis)
-2. [How to Set Up the Environment](#how-to-set-up-environment)
-3. [Data Collection](#data-collection)
-4. [Data Sources and Citations](#data-sources-and-citations)
-5. [Notebooks](#notebooks)
-6. [Final Dataset](#final-dataset)
-7. [What's Next?](#whats-next)
-
+2. [Environment Setup](#environment-setup)
+3. [Running the Project](#running-the-project)
+4. [Data Collection](#data-collection)
+5. [Data Sources and Citations](#data-sources-and-citations)
+6. [Completed Notebooks](#completed-notebooks)
+7. [Final Dataset](#final-dataset)
+8. [Feature Selection and Modeling](#feature-selection-and-modeling)
+9. [Final Testing Results](#final-testing-results)
+10. [Interpretation and Limitations](#interpretation-and-limitations)
+11. [Thesis Writing](#thesis-writing)
 
 ## Overview of Thesis
 
-This project creates a county-level dataset for studying and predicting corn
-yield using weather and soil data over the states in the Corn Belt. These states include: Illinois, Indiana, Iowa, Kansas, Kentucky, Michigan, Minnesota, Missouri, Nebraska, North Dakota, Ohio, South Dakota, and Wisconsin.
+This project examines whether selecting a smaller set of weather and soil features can maintain or improve county-level corn-yield predictions, and whether the benefit of feature selection depends on the prediction algorithm.
 
-The dataset combines:
+The completed analysis compares **Pearson correlation, Spearman correlation, and random forest feature importance** across **random forest, linear regression, and neural network regression**. Each algorithm is evaluated with all retained environmental features and with the top 15 environmental features from each selection method. A historical county-average yield baseline provides a reference for the predictions.
 
-- Corn yield from USDA NASS
-- Weather from Daymet
-- Soil properties from USDA NRCS SSURGO
+The study combines USDA NASS corn yields, Daymet weather, and USDA NRCS SSURGO soil data for **2000–2025**. The study region consists of 13 states: Illinois, Indiana, Iowa, Kansas, Kentucky, Michigan, Minnesota, Missouri, Nebraska, North Dakota, Ohio, South Dakota, and Wisconsin. This is the project's operational definition of the Corn Belt study region.
 
-The project is being completed as part of my master's degree in Computer
-Science at Indiana State University.
+The research questions are:
 
+1. Which weather and soil features rank highly under Pearson correlation, Spearman correlation, and random forest importance?
+2. Can the selected feature sets maintain or improve predictions for later years compared with using all retained environmental features?
+3. Does the effect of feature selection differ among random forest, linear regression, and neural network regression?
 
-## How to set up environment
+Because the inputs include weather from all 12 months of the yield year, the experiment evaluates **retrospective yield estimation using observed weather**. It does not establish an in-season forecast that can be issued before all of those observations are available.
 
-I use Anaconda and JupyterLab to run the Python code in this project. The following guide explains how to set up the project environment:
-- [Anaconda Environment Setup for a Jupyter Lab/Notebook Project](./docs/environment_setup.md). 
+The project is part of my master's degree in Computer Science at Indiana State University.
 
-I have also added the code below to copy and paste to setup the same environment I am using:
+## Environment Setup
+
+I use Anaconda, Python 3.12, and JupyterLab. Additional setup instructions are available in [Anaconda Environment Setup for a Jupyter Lab/Notebook Project](./docs/environment_setup.md).
 
 ```bash
 conda create --name corn_belt_yield python=3.12
-
 conda activate corn_belt_yield
-
 conda install pandas numpy matplotlib seaborn scikit-learn requests python-dotenv jupyterlab ipykernel
-
 python -m ipykernel install --user --name corn_belt_yield --display-name "Corn Belt Yield"
 ```
 
-This environment contains the Python packages required to collect, clean, combine, visualize, and model county-level corn yield, weather, and soil data.
-
+These commands install the packages used for data collection, preparation, visualization, feature selection, and modeling. They do not pin every package version; matching the original data and software environment is necessary when reproducing exact numerical results.
 
 ### USDA NASS API Key
 
-The corn-yield notebook requires a USDA NASS API key.
-
-Create a file named `.env` and add:
+Notebook 01 requires a USDA NASS Quick Stats API key. Create a `.env` file in the repository root containing:
 
 ```text
 USDA_NASS_API_KEY=your_api_key_here
 ```
 
+Keep the `.env` file out of version control.
+
+## Running the Project
+
+To rebuild the dataset, run Notebooks **01 → 02 → 03**. Then run **04 → 05 → 06** for exploration, feature rankings, and model evaluation.
+
+Before running the collection notebooks:
+
+1. Add the USDA NASS API key to `.env`.
+2. Download the Basic county coordinate CSV from [SimpleMaps](https://simplemaps.com/data/us-counties) and place it at `data/raw/uscounties.csv`. Notebook 02 reads its `county_fips`, `lat`, and `lng` columns.
+3. Ensure the data folders exist. From the repository root, run:
+
+```bash
+mkdir -p data/raw/daymet_counties data/raw/soil_counties data/processed
+jupyter lab
+```
+
+Open the notebooks in the `notebooks/` directory and select the **Corn Belt Yield** kernel. Their `../data/...` paths assume the notebook working directory is `notebooks/`.
+
+The weather and soil notebooks save separate county CSVs and skip files that already exist. To refresh a county's source data, its cached file must be replaced or removed before rerunning the download. Data collection requires internet access and the providers' current access requirements.
+
+If `data/processed/corn_belt_yield_weather_soil.csv` is already available, Notebooks 04–06 can run from that file without repeating the API downloads. Notebook 06 recomputes its feature selections and preprocessing within each training stage.
+
+For a final reproducibility check, restart the kernel, run each analysis notebook from top to bottom, and save its outputs. Record the package versions used for the thesis results; for example, export the active environment from the repository root:
+
+```bash
+conda env export --no-builds > environment.yml
+```
 
 ## Data Collection
-
 
 ### Corn Belt Yield Data
 
@@ -92,10 +114,12 @@ Daily weather is converted into monthly features for:
 - Minimum temperature
 - Vapor pressure
 
+Precipitation and solar energy are summed by month; day length, snow-water equivalent, temperatures, and vapor pressure are averaged by month. Daily solar energy is calculated as `srad × dayl / 1,000,000`, converting daylight-average radiation flux and daylight duration to MJ/m²/day before monthly aggregation.
+
 
 ### Corn Belt Soil Data
 
-Soil data comes from
+Soil data come from
 [USDA NRCS SSURGO](https://www.nrcs.usda.gov/resources/data-and-reports/soil-survey-geographic-database-ssurgo)
 through the
 [Soil Data Access service](https://sdmdataaccess.nrcs.usda.gov/Query.aspx).
@@ -132,9 +156,11 @@ $$
 \text{county average} = \frac{\sum(\text{soil value} \times \text{soil weight})}{\sum(\text{soil weight})}
 $$
 
-This gives more influence to soil records that represent a larger portion of
-the county.
+Layer thickness is restricted to the portion of each horizon between 0 and 30 cm. Each property uses only records with a nonmissing value and a positive soil weight. For sand, silt, and clay, all three texture values must be present and their sum must be greater than zero; a zero value for one texture fraction can still be retained.
 
+This gives more influence to soil records that represent a larger portion of the county's upper 30 cm.
+
+**Available water storage and slope use a different weighting calculation.** These fields are already summarized by NRCS at the map-unit level. Notebook 03 keeps one record per map unit within each county and weights those values only by the map-unit acres inside that county. Available water storage describes 0–100 cm; the horizon-based properties describe 0–30 cm.
 
 ## Data Sources and Citations
 
@@ -180,7 +206,7 @@ Soil information was obtained from the Soil Survey Geographic Database (SSURGO),
 
 > Soil Survey Staff, Natural Resources Conservation Service, United States Department of Agriculture. (n.d.). *Soil Survey Geographic (SSURGO) Database* [Data set]. Soil Data Access. Accessed September 4, 2026. https://sdmdataaccess.nrcs.usda.gov/
 
-The soil records were processed into county-level weighted averages based on map-unit area, component percentage, and soil-horizon thickness. These calculations and resulting county-level values are derived products and are not original SSURGO measurements.
+Horizon-level soil properties were processed into county-level weighted averages using map-unit area, component percentage, and the thickness of the horizon within 0–30 cm. Available water storage and slope were weighted by county map-unit area only. These calculations and resulting county-level values are derived products and are not original SSURGO measurements.
 
 ### County Coordinate Data
 
@@ -196,20 +222,33 @@ The SimpleMaps Basic database is identified by its provider as licensed under th
 
 The file `data/processed/corn_belt_yield_weather_soil.csv` is a derived dataset produced for this research project. It combines and transforms data from USDA NASS, Daymet, USDA NRCS SSURGO, and SimpleMaps. The inclusion of these sources does not imply that the original data providers endorse this project or its conclusions.
 
+### Modeling and Evaluation References
 
-## Notebooks
+The model implementations and preprocessing follow the scikit-learn interfaces used in Notebook 06:
 
-Run the notebooks in this order:
+- [RandomForestRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html)
+- [LinearRegression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html)
+- [MLPRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPRegressor.html)
+- [StandardScaler](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html)
+
+For discussion of RMSE and MAE:
+
+> Hodson, T. O. (2022). Root-mean-square error (RMSE) or mean absolute error (MAE): when to use them or not. *Geoscientific Model Development, 15*, 5481–5487. https://doi.org/10.5194/gmd-15-5481-2022
+
+## Completed Notebooks
+
+The six notebooks form the completed data collection and analysis workflow:
 
 | Order | Notebook | Purpose |
 |---:|---|---|
-| 1 | [`01_county_level_corn_yield.ipynb`](./notebooks/01_county_level_corn_yield.ipynb) | Downloads and cleans corn-yield data |
-| 2 | [`02_county_level_weather_daymet.ipynb`](./notebooks/02_county_level_weather_daymet.ipynb) | Downloads and summarizes weather data |
-| 3 | [`03_county_level_soil.ipynb`](./notebooks/03_county_level_soil.ipynb) | Downloads and summarizes soil data |
-| 4 | [`04_exploratory_data_analysis.ipynb`](./notebooks/04_exploratory_data_analysis.ipynb) | Exploratory data analysis of the final combined dataset |
-| 5 | [`05_correlations_and_feature_importance.ipynb`](./notebooks/05_correlations_and_feature_importance.ipynb) | Finding correlations and important features in the dataset |
-| 6 | [`06_model_evaluation_and_final_results.ipynb`](./notebooks/06_model_evaluation_and_final_results.ipynb) | Evaluating models based on the features selected by the correlations and feature importance methods |
+| 1 | [`01_county_level_corn_yield.ipynb`](./notebooks/01_county_level_corn_yield.ipynb) | Retrieves county-level NASS corn yields for 2000–2025, selects the study states, removes combined-county records, and creates county FIPS identifiers. |
+| 2 | [`02_county_level_weather_daymet.ipynb`](./notebooks/02_county_level_weather_daymet.ipynb) | Associates counties with coordinates, retrieves daily Daymet weather, creates 84 monthly weather features, and merges weather with county-year yields. |
+| 3 | [`03_county_level_soil.ipynb`](./notebooks/03_county_level_soil.ipynb) | Retrieves SSURGO records, computes nine county-level soil properties, and writes the final combined dataset. |
+| 4 | [`04_exploratory_data_analysis.ipynb`](./notebooks/04_exploratory_data_analysis.ipynb) | Examines missing values, duplicates, zero yields, county coverage, and the distributions and patterns of yield, weather, and soil variables. |
+| 5 | [`05_correlations_and_feature_importance.ipynb`](./notebooks/05_correlations_and_feature_importance.ipynb) | Removes constant environmental features and compares Pearson, Spearman, and random forest feature rankings using 2000–2020 observations. |
+| 6 | [`06_model_evaluation_and_final_results.ipynb`](./notebooks/06_model_evaluation_and_final_results.ipynb) | Recomputes feature selection for each training stage, evaluates a baseline and 12 model/feature-set combinations on validation and testing periods, and presents final comparison tables and plots. |
 
+Notebook 04 describes the full 2000–2025 dataset. Notebook 05 provides feature-ranking analysis for 2000–2020. Notebook 06 performs the predictive comparisons with the chronological splits described below.
 
 ## Final Dataset
 
@@ -219,6 +258,8 @@ The final dataset is:
 
 
 ### Dataset Summary
+
+The completed notebooks report the following summary for the dataset used in the experiments:
 
 | Item | Value |
 |---|---:|
@@ -231,8 +272,11 @@ The final dataset is:
 | Soil variables | 9 |
 | Missing values | 0 |
 | Duplicate county-year records | 0 |
+| Reported zero-yield observations retained | 18 |
 
-Each row represents one county during one year. The dataset contains county identifiers, annual corn yield, monthly weather measurements, and county-level soil characteristics.
+Each row represents one county during one year. The dataset contains county identifiers, annual corn yield, monthly weather measurements, and county-level soil characteristics. County coverage varies by year, so not every county has all 26 years of observations. The 18 reported zero yields are retained in the analysis.
+
+The 106-column CSV includes identifiers, descriptive fields, and the target as well as potential predictors. It is not a 106-predictor model input. The three constant summer snow-water-equivalent columns remain documented in the dataset and are removed when preparing the feature-ranking and modeling inputs.
 
 
 ### County and Yield Columns
@@ -285,7 +329,7 @@ For example, `tmax_mean_c_m07` is the mean daily maximum temperature during July
 | `tmin_mean_c_m01` through `tmin_mean_c_m12` | Mean daily minimum temperature during each month, measured in degrees Celsius. |
 | `vp_mean_pa_m01` through `vp_mean_pa_m12` | Mean atmospheric water vapor pressure during each month, measured in pascals. Higher values generally represent more moisture in the air. |
 
-The weather data comes from the Daymet grid cell nearest to each county's representative latitude and longitude. Therefore, the values represent one location near the center of the county rather than an average across the entire county.
+The weather data come from the Daymet grid cell nearest to each county's representative latitude and longitude. Therefore, the values represent one location near the center of the county rather than an average across the entire county.
 
 
 ### Soil Columns
@@ -304,29 +348,104 @@ The soil columns are county-level weighted averages created from SSURGO soil rec
 | `available_water_storage_cm_0_100cm` | Weighted average amount of plant-available water that can be stored in the top 100 cm of soil, measured in centimeters of water. |
 | `slope_pct` | Weighted average land slope expressed as a percentage. Larger values represent steeper land. |
 
-The soil weighting process accounts for:
+For the seven horizon-level properties, the soil weighting process accounts for:
 
 1. the amount of each soil map unit that overlaps the county,
 2. the percentage of each soil component within the map unit, and
 3. the thickness of each soil horizon within the selected depth.
 
-This prevents a small soil component or thin soil horizon from having the same influence as a soil that covers a large portion of the county.
+Available water storage and slope use county map-unit area weights only. Soil values represent county aggregates and are reused for every year of that county.
 
+## Feature Selection and Modeling
 
-## What's Next?
+### Chronological Evaluation
 
-Since I have collected data and built a dataset, the next step will be to create a final analysis notebook that explores the data, creates visualizations, engineers machine-learning features, and compares
-prediction models.
+Notebook 06 uses the following periods:
 
-A Thesis direction could be called "County-Level Corn Yield Prediction Using Machine Learning, Weather, and Soil Data". 
+| Stage | Years | County-year observations | Purpose |
+|---|---|---:|---|
+| Development training | 2000–2017 | 17,919 | Fit preprocessing, feature rankings, and models for validation comparisons. |
+| Validation | 2018–2020 | 2,561 | Compare the model and feature-set combinations. |
+| Final training | 2000–2020 | 20,480 | Refit preprocessing, feature rankings, and all model combinations before testing. |
+| Testing | 2021–2025 | 4,164 | Report later-year performance of the final fitted models. |
 
-Some potential questions:
+Final training combines the development training and validation observations. The same testing observations are used for every final model and the final baseline.
 
-1. How accurately can machine-learning models predict county-level corn yield?
-2. How much do soil variables improve predictions compared with weather alone?
-3. How early in the growing season can a reliable prediction be made?
-4. Which weather and soil variables have the greatest influence on predictions?
+The variance filter, feature rankings, and scalers are fitted on the relevant training period. The fitted transformations and selected columns are then applied to validation or testing observations. Feature rankings are recomputed when moving from the 2000–2017 training period to the 2000–2020 final training period.
 
-I could use machine learning techniques like Linear Regression, Support Vector Regression, and Random Forest to do some predictions with. 
+### Feature Sets
 
+The starting environmental inputs contain 84 monthly weather features and nine soil features. A `VarianceThreshold(threshold=0.0)` filter removes three constant columns: `swe_mean_kg_m2_m07`, `swe_mean_kg_m2_m08`, and `swe_mean_kg_m2_m09`. This leaves **90 environmental features**.
 
+Each model also receives the same three context variables: **year, latitude, and longitude**. These variables are appended to each input set and are excluded from the environmental feature rankings.
+
+| Feature set | Environmental features | Context variables | Total model inputs |
+|---|---:|---:|---:|
+| All retained features | 90 | 3 | 93 |
+| Pearson-selected | 15 | 3 | 18 |
+| Spearman-selected | 15 | 3 | 18 |
+| RF-importance-selected | 15 | 3 | 18 |
+
+Pearson and Spearman features are ranked by the **absolute magnitude** of their correlation with yield. The random forest method ranks features using the fitted forest's impurity-based `feature_importances_`. The top 15 environmental features are used for each selected set.
+
+### Prediction Models
+
+Each of the four input sets is evaluated with each of the three algorithms, giving **12 model combinations**:
+
+| Algorithm | Implementation and settings used in Notebook 06 |
+|---|---|
+| Random forest | `RandomForestRegressor(random_state=110, n_jobs=-2)`, using the default 100 trees and other default estimator settings. |
+| Linear regression | `LinearRegression()` with its default estimator settings. |
+| Neural network | `MLPRegressor(hidden_layer_sizes=(100,), activation="relu", solver="adam", max_iter=1000, early_stopping=False, random_state=110)`. |
+
+Linear regression and the neural networks use predictors standardized with `StandardScaler`. A separate scaler is fitted for each feature set using its training observations, and the same fitted scaler transforms the corresponding validation or testing inputs. Random forest uses unscaled inputs. Yield remains in bushels per acre for all models.
+
+The neural network has one hidden layer with 100 neurons. The `max_iter=1000` setting is a training limit; it does not require every network to run for 1,000 epochs.
+
+### Historical County-Average Baseline
+
+The baseline predicts each county's average yield from the relevant training period. If a county has no training observations, it uses that state's training-period mean; an overall training-period mean is the final fallback. All baseline averages are calculated from training observations.
+
+### Evaluation Metrics
+
+The notebook reports mean absolute error (**MAE**), mean squared error (**MSE**), root mean squared error (**RMSE**), and **R²**. MAE and RMSE are measured in bushels per acre; MSE is measured in squared bushels per squared acre. Lower MAE, MSE, and RMSE indicate smaller prediction errors, and higher R² indicates better performance relative to predicting the evaluation set's mean.
+
+Comparison tables are sorted by RMSE because it retains yield units and gives greater influence to large errors. MAE is also reported because it can rank models differently. Scores are pooled across county-year observations, with equal weight per observation and no harvested-acreage weighting.
+
+## Final Testing Results
+
+The following results are recorded in Notebook 06 after training on **2000–2020** and evaluating on **2021–2025**. All 13 rows use the same 4,164 testing observations. The table is ordered by RMSE and rounded for readability; the notebook retains the underlying calculated values.
+
+| Model | Feature set | Inputs | MAE | MSE | RMSE | R² |
+|---|---|---:|---:|---:|---:|---:|
+| Neural network | Spearman | 18 | 15.778 | 427.183 | 20.668 | 0.6931 |
+| Neural network | Pearson | 18 | 17.018 | 485.112 | 22.025 | 0.6515 |
+| Neural network | RF importance | 18 | 16.752 | 492.397 | 22.190 | 0.6463 |
+| Random forest | RF importance | 18 | 18.437 | 508.594 | 22.552 | 0.6347 |
+| Random forest | Spearman | 18 | 18.408 | 513.687 | 22.665 | 0.6310 |
+| Random forest | Pearson | 18 | 18.697 | 528.900 | 22.998 | 0.6201 |
+| Random forest | All features | 93 | 20.003 | 594.063 | 24.373 | 0.5733 |
+| Neural network | All features | 93 | 19.705 | 614.371 | 24.786 | 0.5587 |
+| Linear regression | All features | 93 | 20.271 | 690.944 | 26.286 | 0.5037 |
+| Linear regression | RF importance | 18 | 21.148 | 727.029 | 26.963 | 0.4778 |
+| Linear regression | Pearson | 18 | 22.827 | 867.419 | 29.452 | 0.3769 |
+| Linear regression | Spearman | 18 | 23.202 | 880.836 | 29.679 | 0.3673 |
+| Historical county-average baseline | County mean with fallbacks | — | 31.920 | 1276.244 | 35.725 | 0.0833 |
+
+MAE and RMSE are in **bushels per acre**. MSE is in **(bushels per acre)²**. R² is unitless and is not a percentage accuracy score.
+
+### Main Findings
+
+- The **Spearman-selected neural network** has the lowest testing MAE (**15.778**) and RMSE (**20.668**), with **R² = 0.6931**, using 18 inputs.
+- All three selection methods improve testing MAE and RMSE for random forest and the neural network relative to their respective all-feature models.
+- Linear regression achieves its lowest testing MAE and RMSE with all 93 inputs.
+- Within random forest, RF importance selection gives the lowest testing RMSE (**22.552**), while Spearman selection gives the lowest testing MAE (**18.408**).
+- Available water storage and summer temperature features rank prominently across the feature-selection methods. Their rankings describe statistical associations and contributions to fitted models.
+
+The lowest validation RMSE was achieved by random forest with Spearman-selected features (**18.778**). The model with the lowest testing RMSE differs, reinforcing that the observed rankings depend on the evaluation period and the fitted models. The central finding is that the usefulness of feature selection depends on the prediction algorithm.
+
+## Thesis Writing
+
+The data collection, exploratory analysis, feature-ranking analysis, and model comparisons in Notebooks 01–06 are complete. The next stage is to write the thesis using the documented methods, saved outputs, and cited data sources.
+
+The thesis will explain data collection and aggregation, the chronological evaluation design, the feature-selection methods, the differences among prediction algorithms, and the interpretation and limitations of the observed results.
