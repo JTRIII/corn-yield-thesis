@@ -2,7 +2,7 @@
 
 **Author:** James T. Roberts III  
 **Institution:** Indiana State University  
-**Status:** Notebooks 01–06 complete; thesis manuscript in preparation
+**Status:** Notebooks 01–07 complete; thesis manuscript being revised
 
 ## Table of Contents
 
@@ -14,15 +14,16 @@
 6. [Completed Notebooks](#completed-notebooks)
 7. [Final Dataset](#final-dataset)
 8. [Feature Selection and Modeling](#feature-selection-and-modeling)
-9. [Final Testing Results](#final-testing-results)
-10. [Interpretation and Limitations](#interpretation-and-limitations)
-11. [Thesis Writing](#thesis-writing)
+9. [Feature Count Comparison (Notebook 07)](#feature-count-comparison-notebook-07)
+10. [Final Testing Results](#final-testing-results)
+11. [Interpretation and Limitations](#interpretation-and-limitations)
+12. [Thesis Writing](#thesis-writing)
 
 ## Overview of Thesis
 
 This project examines whether selecting a smaller set of weather and soil features can maintain or improve county-level corn-yield predictions, and whether the benefit of feature selection depends on the prediction algorithm.
 
-The completed analysis compares **Pearson correlation, Spearman correlation, and random forest feature importance** across **random forest, linear regression, and neural network regression**. Each algorithm is evaluated with all retained environmental features and with the top 15 environmental features from each selection method. A historical county-average yield baseline provides a reference for the predictions.
+The analysis compares **Pearson correlation, Spearman correlation, and random forest feature importance** across **random forest, linear regression, and neural network regression**. Notebook 06 documents the initial fixed **15-feature** experiment. Notebook 07 extends this work by comparing **1–20 selected environmental features**, choosing one common count from validation data, and reporting updated final-test results for **6 selected features** (plus three context variables). The full environmental set and a historical county-average yield baseline remain as comparisons.
 
 The study combines USDA NASS corn yields, Daymet weather, and USDA NRCS SSURGO soil data for **2000–2025**. The study region consists of 13 states: Illinois, Indiana, Iowa, Kansas, Kentucky, Michigan, Minnesota, Missouri, Nebraska, North Dakota, Ohio, South Dakota, and Wisconsin. This is the project's operational definition of the Corn Belt study region.
 
@@ -61,7 +62,7 @@ Keep the `.env` file out of version control.
 
 ## Running the Project
 
-To rebuild the dataset, run Notebooks **01 → 02 → 03**. Then run **04 → 05 → 06** for exploration, feature rankings, and model evaluation.
+To rebuild the dataset, run Notebooks **01 → 02 → 03**. Then run **04 → 05 → 06 → 07** for exploration, feature rankings, the original model comparison, and the follow-up feature-count comparison. Notebook 07 repeats the modeling workflow from Notebook 06; it recomputes feature rankings and models rather than loading saved evaluation results from Notebook 06.
 
 Before running the collection notebooks:
 
@@ -78,7 +79,7 @@ Open the notebooks in the `notebooks/` directory and select the **Corn Belt Yiel
 
 The weather and soil notebooks save separate county CSVs and skip files that already exist. To refresh a county's source data, its cached file must be replaced or removed before rerunning the download. Data collection requires internet access and the providers' current access requirements.
 
-If `data/processed/corn_belt_yield_weather_soil.csv` is already available, Notebooks 04–06 can run from that file without repeating the API downloads. Notebook 06 recomputes its feature selections and preprocessing within each training stage.
+If `data/processed/corn_belt_yield_weather_soil.csv` is already available, Notebooks 04–07 can run from that file without repeating the API downloads. Notebooks 06 and 07 recompute feature selections and preprocessing within each training stage. **Notebook 07 contains the updated final results used for the current thesis revision**; Notebook 06 is retained as the original 15-feature comparison.
 
 For a final reproducibility check, restart the kernel, run each analysis notebook from top to bottom, and save its outputs. Record the package versions used for the thesis results; for example, export the active environment from the repository root:
 
@@ -237,18 +238,19 @@ For discussion of RMSE and MAE:
 
 ## Completed Notebooks
 
-The six notebooks form the completed data collection and analysis workflow:
+The seven notebooks form the completed data collection and analysis workflow:
 
 | Order | Notebook | Purpose |
 |---:|---|---|
 | 1 | [`01_county_level_corn_yield.ipynb`](./notebooks/01_county_level_corn_yield.ipynb) | Retrieves county-level NASS corn yields for 2000–2025, selects the study states, removes combined-county records, and creates county FIPS identifiers. |
 | 2 | [`02_county_level_weather_daymet.ipynb`](./notebooks/02_county_level_weather_daymet.ipynb) | Associates counties with coordinates, retrieves daily Daymet weather, creates 84 monthly weather features, and merges weather with county-year yields. |
 | 3 | [`03_county_level_soil.ipynb`](./notebooks/03_county_level_soil.ipynb) | Retrieves SSURGO records, computes nine county-level soil properties, and writes the final combined dataset. |
-| 4 | [`04_exploratory_data_analysis.ipynb`](./notebooks/04_exploratory_data_analysis.ipynb) | Examines missing values, duplicates, zero yields, county coverage, and the distributions and patterns of yield, weather, and soil variables. |
+| 4 | [`04_exploratory_data_analysis.ipynb`](./notebooks/04_exploratory_data_analysis.ipynb) | Examines data quality, coverage, and yield/weather/soil distributions, including exploratory yield normality checks by evaluation period. |
 | 5 | [`05_correlations_and_feature_importance.ipynb`](./notebooks/05_correlations_and_feature_importance.ipynb) | Removes constant environmental features and compares Pearson, Spearman, and random forest feature rankings using 2000–2020 observations. |
-| 6 | [`06_model_evaluation_and_final_results.ipynb`](./notebooks/06_model_evaluation_and_final_results.ipynb) | Recomputes feature selection for each training stage, evaluates a baseline and 12 model/feature-set combinations on validation and testing periods, and presents final comparison tables and plots. |
+| 6 | [`06_model_evaluation_and_final_results.ipynb`](./notebooks/06_model_evaluation_and_final_results.ipynb) | Original fixed 15-feature experiment: computes training-only feature rankings and evaluates the baseline and 12 model/feature-set combinations across chronological validation and testing periods. |
+| 7 | [`07_feature_count_comparison.ipynb`](./notebooks/07_feature_count_comparison.ipynb) | Follow-up analysis testing selected feature counts 1–20 on 2018–2020 validation data; selects one common count (6), refits rankings and models on 2000–2020, and reports updated 2021–2025 test results. |
 
-Notebook 04 describes the full 2000–2025 dataset. Notebook 05 provides feature-ranking analysis for 2000–2020. Notebook 06 performs the predictive comparisons with the chronological splits described below.
+Notebook 04 describes the full 2000–2025 dataset. Notebook 05 provides feature-ranking analysis for 2000–2020. Notebook 06 records the initial fixed 15-feature modeling experiment. **Notebook 07 is the updated experiment and source of the final testing results below.**
 
 ## Final Dataset
 
@@ -360,7 +362,7 @@ Available water storage and slope use county map-unit area weights only. Soil va
 
 ### Chronological Evaluation
 
-Notebook 06 uses the following periods:
+Notebooks 06 and 07 use the following periods:
 
 | Stage | Years | County-year observations | Purpose |
 |---|---|---:|---|
@@ -382,25 +384,27 @@ Each model also receives the same three context variables: **year, latitude, and
 | Feature set | Environmental features | Context variables | Total model inputs |
 |---|---:|---:|---:|
 | All retained features | 90 | 3 | 93 |
-| Pearson-selected | 15 | 3 | 18 |
-| Spearman-selected | 15 | 3 | 18 |
-| RF-importance-selected | 15 | 3 | 18 |
+| Pearson-selected (Notebook 07) | 6 | 3 | 9 |
+| Spearman-selected (Notebook 07) | 6 | 3 | 9 |
+| RF-importance-selected (Notebook 07) | 6 | 3 | 9 |
 
-Pearson and Spearman features are ranked by the **absolute magnitude** of their correlation with yield. The random forest method ranks features using the fitted forest's impurity-based `feature_importances_`. The top 15 environmental features are used for each selected set.
+Pearson and Spearman features are ranked by the **absolute magnitude** of their correlation with yield. The random forest method ranks features using the fitted forest's impurity-based `feature_importances_`. Notebook 07 selects the top **six** features from each ranking (based on the validation experiment described below), while Notebook 06 originally used 15. Selected feature columns are alphabetically sorted before model fitting to ensure that identical selected subsets are supplied in an identical order.
+
+The final **Pearson and Spearman subsets have the same six features**, although in different ranking orders: July and August maximum temperature, June solar radiation, June and July precipitation, and available water storage (0–100 cm). The final **random forest importance subset** contains July and August maximum temperature, June minimum temperature, June vapor pressure, available water storage, and saturated hydraulic conductivity.
 
 ### Prediction Models
 
-Each of the four input sets is evaluated with each of the three algorithms, giving **12 model combinations**:
+Each of the four input sets is evaluated with each of the three algorithms, giving **12 model combinations** in the final evaluation. The feature-count search separately fits 20 × 3 × 3 = **180 validation configurations**:
 
-| Algorithm | Implementation and settings used in Notebook 06 |
+| Algorithm | Implementation and settings used in Notebook 07 |
 |---|---|
 | Random forest | `RandomForestRegressor(random_state=110, n_jobs=-2)`, using the default 100 trees and other default estimator settings. |
 | Linear regression | `LinearRegression()` with its default estimator settings. |
-| Neural network | `MLPRegressor(hidden_layer_sizes=(100,), activation="relu", solver="adam", max_iter=1000, early_stopping=False, random_state=110)`. |
+| Neural network | `MLPRegressor(hidden_layer_sizes=(100,), activation="relu", solver="adam", max_iter=2000, early_stopping=False, random_state=110)`. |
 
 Linear regression and the neural networks use predictors standardized with `StandardScaler`. A separate scaler is fitted for each feature set using its training observations, and the same fitted scaler transforms the corresponding validation or testing inputs. Random forest uses unscaled inputs. Yield remains in bushels per acre for all models.
 
-The neural network has one hidden layer with 100 neurons. The `max_iter=1000` setting is a training limit; it does not require every network to run for 1,000 epochs.
+The neural network has one hidden layer with 100 neurons. In Notebook 07, `max_iter=2000` is an upper training limit; convergence may stop training earlier. Notebook 06 used the earlier 1,000-iteration setting.
 
 ### Historical County-Average Baseline
 
@@ -412,40 +416,78 @@ The notebook reports mean absolute error (**MAE**), mean squared error (**MSE**)
 
 Comparison tables are sorted by RMSE because it retains yield units and gives greater influence to large errors. MAE is also reported because it can rank models differently. Scores are pooled across county-year observations, with equal weight per observation and no harvested-acreage weighting.
 
+## Feature Count Comparison (Notebook 07)
+
+Notebook 07 adds a **follow-up feature-count sensitivity experiment** to justify how many environmental predictors to retain. It tests each integer count from **1 to 20**, for each of the **three ranking methods** and **three prediction models**: 180 validation configurations. It does not use saved model performance from Notebook 06 to compute the search results.
+
+- **Feature ranking and fitting:** 2000–2017 training observations.
+- **Feature-count comparison:** 2018–2020 validation observations.
+- **Selection rule:** The count with the **lowest unweighted mean validation RMSE** across the nine combinations of ranking method × prediction model. The goal is one shared count, not a separate optimum for each model.
+- **Refit and testing:** Recalculate feature rankings and refit models using 2000–2020; evaluate the resulting models on 2021–2025. The final test period is **not used to select the feature count**.
+
+| Selected environmental features | Mean validation RMSE (bu/acre) |
+|---:|---:|
+| **6** | **23.614** |
+| 7 | 23.661 |
+| 10 | 23.854 |
+| 15 | 23.878 |
+| 20 | 24.718 |
+
+Six features produced the smallest mean validation RMSE **among the 20 tested counts**. The difference between 6 and 7 was small (approximately 0.047 bu/acre), and results may differ across individual models. This experiment does **not** establish a universal optimal subset size. The 15-feature model results from Notebook 06 were studied earlier; the count search should therefore be reported transparently as a **follow-up analysis**, not as a model-selection rule established before any test-period results were examined.
+
+For the final six-feature subsets, each model also includes **year, latitude, and longitude**, giving **9 total predictors** per selected model compared with **93** in the full-feature model.
+
 ## Final Testing Results
 
-The following results are recorded in Notebook 06 after training on **2000–2020** and evaluating on **2021–2025**. All 13 rows use the same 4,164 testing observations. The table is ordered by RMSE and rounded for readability; the notebook retains the underlying calculated values.
+The table below is from **Notebook 07**, after refitting on **2000–2020** and evaluating on **2021–2025** (4,164 county-year observations). It supersedes the earlier **15-feature** final-test table in Notebook 06 for the updated thesis. The models were not selected using test RMSE.
 
 | Model | Feature set | Inputs | MAE | MSE | RMSE | R² |
 |---|---|---:|---:|---:|---:|---:|
-| Neural network | Spearman | 18 | 15.778 | 427.183 | 20.668 | 0.6931 |
-| Neural network | Pearson | 18 | 17.018 | 485.112 | 22.025 | 0.6515 |
-| Neural network | RF importance | 18 | 16.752 | 492.397 | 22.190 | 0.6463 |
-| Random forest | RF importance | 18 | 18.437 | 508.594 | 22.552 | 0.6347 |
-| Random forest | Spearman | 18 | 18.408 | 513.687 | 22.665 | 0.6310 |
-| Random forest | Pearson | 18 | 18.697 | 528.900 | 22.998 | 0.6201 |
+| Random forest | Pearson | 9 | 18.149 | 495.380 | **22.257** | **0.6442** |
+| Random forest | Spearman | 9 | 18.149 | 495.380 | **22.257** | **0.6442** |
+| Random forest | RF importance | 9 | 18.322 | 512.408 | 22.636 | 0.6319 |
+| Neural network | RF importance | 9 | 17.837 | 528.190 | 22.982 | 0.6206 |
+| Neural network | Pearson | 9 | **17.169** | 528.203 | 22.983 | 0.6206 |
+| Neural network | Spearman | 9 | **17.169** | 528.203 | 22.983 | 0.6206 |
 | Random forest | All features | 93 | 20.003 | 594.063 | 24.373 | 0.5733 |
 | Neural network | All features | 93 | 19.705 | 614.371 | 24.786 | 0.5587 |
 | Linear regression | All features | 93 | 20.271 | 690.944 | 26.286 | 0.5037 |
-| Linear regression | RF importance | 18 | 21.148 | 727.029 | 26.963 | 0.4778 |
-| Linear regression | Pearson | 18 | 22.827 | 867.419 | 29.452 | 0.3769 |
-| Linear regression | Spearman | 18 | 23.202 | 880.836 | 29.679 | 0.3673 |
+| Linear regression | Pearson | 9 | 23.723 | 912.002 | 30.199 | 0.3449 |
+| Linear regression | Spearman | 9 | 23.723 | 912.002 | 30.199 | 0.3449 |
+| Linear regression | RF importance | 9 | 24.078 | 922.147 | 30.367 | 0.3376 |
 | Historical county-average baseline | County mean with fallbacks | — | 31.920 | 1276.244 | 35.725 | 0.0833 |
 
-MAE and RMSE are in **bushels per acre**. MSE is in **(bushels per acre)²**. R² is unitless and is not a percentage accuracy score.
+MAE and RMSE are in **bushels per acre**; MSE is in **(bushels per acre)²**. R² is unitless. All configurations were evaluated on the same final test observations.
 
 ### Main Findings
 
-- The **Spearman-selected neural network** has the lowest testing MAE (**15.778**) and RMSE (**20.668**), with **R² = 0.6931**, using 18 inputs.
-- All three selection methods improve testing MAE and RMSE for random forest and the neural network relative to their respective all-feature models.
-- Linear regression achieves its lowest testing MAE and RMSE with all 93 inputs.
-- Within random forest, RF importance selection gives the lowest testing RMSE (**22.552**), while Spearman selection gives the lowest testing MAE (**18.408**).
-- Available water storage and summer temperature features rank prominently across the feature-selection methods. Their rankings describe statistical associations and contributions to fitted models.
+- The **Pearson/Spearman-selected random forest** models tied for the lowest final-test RMSE (**22.257 bu/acre**) and highest reported R² (**0.6442**) with nine total inputs.
+- The **Pearson/Spearman-selected neural networks** obtained the lowest final-test MAE (**17.169 bu/acre**) among the reported configurations. The best RMSE and best MAE therefore favor different algorithms.
+- The Pearson and Spearman methods selected **identical sets of six environmental variables** for final training; after standardizing column order, corresponding models give identical results. This is **agreement**, not evidence that one correlation method outperformed the other.
+- Six-feature selection improved both RMSE and MAE for random forest and neural network models compared with their own full-feature baselines. For linear regression, the full 93-input model remained better.
+- High-ranked environmental variables included summer maximum temperature and soil available water storage. These rankings indicate **association or fitted-model importance, not causality**.
+- Model comparisons depend on both the **choice of error metric** and the **evaluation period**. A small numerical difference should not be interpreted as a demonstrated statistically significant improvement without a separate uncertainty analysis.
 
-The lowest validation RMSE was achieved by random forest with Spearman-selected features (**18.778**). The model with the lowest testing RMSE differs, reinforcing that the observed rankings depend on the evaluation period and the fitted models. The central finding is that the usefulness of feature selection depends on the prediction algorithm.
+## Interpretation and Limitations
+
+These results support investigating feature ranking and nonlinear prediction algorithms **together**, rather than claiming one model family is universally best. The analysis is a retrospective comparison using **all twelve months of observed weather for each yield year**; it is not an operational pre-harvest forecast. Additional limitations include:
+
+- **Feature-count scope:** Only counts **1–20** were evaluated, and the common count was chosen by the mean validation RMSE over nine configurations. This favors a common practical budget but may not produce each individual model's lowest RMSE.
+- **Temporal evaluation:** Training and validation/testing periods are chronological, but the study does **not** implement repeated walk-forward evaluation, so performance stability across many annual training windows has not been established.
+- **Prior test examination:** The earlier fixed-15 experiment in Notebook 06 includes 2021–2025 test results that were examined before Notebook 07. Describe Notebook 07 as a follow-up sensitivity analysis, and avoid treating the test set as completely unexamined during all study development.
+- **Weather representation:** Each county uses weather from a **single representative Daymet grid cell**, not a county-wide spatial average. Soil values are county-level aggregates treated as static across years.
+- **Inputs and models:** Management practices and other potentially relevant information are not modeled; no exhaustive feature-count, model-hyperparameter, or model-randomness optimization was performed. Statistical significance of performance differences was not tested.
+
+Notebook 04 additionally includes an **exploratory distribution and normality assessment of corn yield by the chronological data periods**. Because Shapiro–Wilk tests on large samples can be highly sensitive to deviations from normality (and its reported p-values may be unreliable for samples larger than 5,000), the plots and descriptive summaries should be interpreted alongside, not replaced by, the test statistics. This normality check does **not** establish that regression residuals follow a normal distribution.
 
 ## Thesis Writing
 
-The data collection, exploratory analysis, feature-ranking analysis, and model comparisons in Notebooks 01–06 are complete. The next stage is to write the thesis using the documented methods, saved outputs, and cited data sources.
+The collection, exploratory analysis, feature-ranking, initial model comparison, and updated feature-count analysis in **Notebooks 01–07** are complete. The thesis draft needs to be synchronized with Notebook 07 before submission:
 
-The thesis will explain data collection and aggregation, the chronological evaluation design, the feature-selection methods, the differences among prediction algorithms, and the interpretation and limitations of the observed results.
+1. **Methodology:** State that a follow-up comparison evaluated feature counts **1–20**, using **mean validation RMSE across nine configurations** to select six features. Explain the chronological training/validation/test periods and the consistent column ordering.
+2. **Results:** Replace the earlier **15-feature final comparison** with the **six-feature Notebook 07 results**, and include the feature-count comparison graph/table and final selected-feature lists.
+3. **Discussion:** Interpret the model-dependent effects of feature selection, the Pearson/Spearman overlap, and the difference between the lowest **RMSE** model (random forest) and the lowest **MAE** model (neural network).
+4. **Limitations and conclusion:** Acknowledge the bounded feature search, the earlier examination of the test period, no walk-forward evaluation, spatial representation of weather, and the retrospective use of full-year weather.
+5. **Abstract and introduction:** Update the research design, selected count, results, and contribution to match the finished experiment.
+
+A later research extension could evaluate wider feature budgets, repeated chronological folds, model initialization sensitivity, or in-season prediction using only weather available at the forecast date.
